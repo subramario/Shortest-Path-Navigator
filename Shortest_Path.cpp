@@ -21,7 +21,7 @@ void BFS_Shortest(int start, int end, int V, vector<int> adj_list[]){ // BFS alg
     int prev[V]; //Links path from source node to end node
 
     for(int i = 0; i<V; i++){
-        visited[i] = false; //"false" initialization indicates no nodes have been traversed yet
+        visited[i] = false; //"false" initialization indicastes no nodes have been traversed yet
         prev[i] = -1; //prev[i] is the direct predeccesor of i -> ie. value node is predecessor of indice node
     }
 
