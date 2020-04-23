@@ -9,39 +9,40 @@
 
 using namespace std; 
 
-void add_edge(vector<int> adj_list[], int u, int v){ //creates an adjacency list (ie. array of arrays)
-    adj_list[u].push_back(v); //add v into list u
-    adj_list[v].push_back(u); //add u into list v
+// Creates an adjacency list (ie. array of arrays)
+void add_edge(vector<int> adj_list[], int u, int v){
+    adj_list[u].push_back(v); // add v into list u
+    adj_list[v].push_back(u); // add u into list v
 }
 
-//Resource used: https://www.eecs.yorku.ca/course_archive/2006-07/W/2011/Notes/BFS_part2.pdf
-void BFS_Shortest(int start, int end, int V, vector<int> adj_list[]){ // BFS algorithm to find the shortest path
-    vector<int> line; //Simulates a queue data structure 
-    bool visited[V]; //Keeps track of all nodes visited
-    int prev[V]; //Links path from source node to end node
+// BFS algorithm to find the shortest path
+void BFS_Shortest(int start, int end, int V, vector<int> adj_list[]){ 
+    vector<int> line; // Used to simulate a queue data structure 
+    bool visited[V]; // Keeps track of all nodes visited
+    int prev[V]; // Links path from source node to end node
 
     for(int i = 0; i<V; i++){
-        visited[i] = false; //"false" initialization indicastes no nodes have been traversed yet
-        prev[i] = -1; //prev[i] is the direct predeccesor of i -> ie. value node is predecessor of indice node
+        visited[i] = false; // "false" initialization indicates no nodes have been traversed yet
+        prev[i] = -1; // prev[i] is the direct predeccesor of i -> ie. value node is predecessor of indice node
     }
 
-    visited[start] = true; //initialize start node as visited 
-    line.push_back(start); //push start node to queue
+    visited[start] = true; // Initialize start node as visited 
+    line.push_back(start); 
 
     while (!line.empty()){
-        int node = line.front(); //peak at front of line --> store value in variable "node"
-        line.erase(line.begin()); //simulates dequeue function
+        int node = line.front(); // Peak at front of line --> store value in variable "node"
+        line.erase(line.begin()); // Simulates dequeueing
 
         if (adj_list){
-            for(unsigned int i = 0; i < adj_list[node].size(); i++){ //Loops through all connected vertices for node in adjacency list
-                if (visited[adj_list[node][i]] == false){ //If node has been visited, will not run loop --> saves time
+            for(unsigned int i = 0; i < adj_list[node].size(); i++){ // Loops through all connected vertices for node in adjacency list
+                if (visited[adj_list[node][i]] == false){ // If node has been visited, this code will not execute --> saves time
                     
                     visited[adj_list[node][i]] = true;
                     prev[adj_list[node][i]] = node;
                     line.push_back(adj_list[node][i]);
 
                     if (adj_list[node][i] == end){
-                        stack <int> shortest_path; //Use stack data structure to recreate shortest path from start to end
+                        stack <int> shortest_path; // Use stack data structure to recreate the shortest path from start node to end node
                         int temp = end;
                         shortest_path.push(end);
                         while(prev[temp] != -1){
@@ -49,7 +50,7 @@ void BFS_Shortest(int start, int end, int V, vector<int> adj_list[]){ // BFS alg
                             temp = prev[temp];
                         }
 
-                        while(!shortest_path.empty()){ //Popping off the stack reproduces the shortest path from start to end
+                        while(!shortest_path.empty()){ // Popping off the stack reproduces the shortest path from start node to end node
                             int i = shortest_path.top();
                             if (i == end)
                                 cout << i << endl;
@@ -68,96 +69,112 @@ void BFS_Shortest(int start, int end, int V, vector<int> adj_list[]){ // BFS alg
     return;
 }
 
-//main function
+
 int main(int argc, char* argv[]){
-    //local variables declared here
-   smatch m;
-   string input;
-   int a,b,c,V = 1;
-   vector <int> *adj_list = NULL; //initializing adjacency list
 
-    //matches command input to appropriate loop
-   regex vert_rx("^[V]"); 
-   regex edge_rx("^[E]");
-   regex short_rx("^[s]");
+    smatch m;
+    string input;
+    int a,b,c,V = 1;
+    vector <int> *adj_list = NULL;
 
-   //extract relevant info from input
-   const regex numbers("([0-9]+)+");
-   const regex coordinates("([0-9]+[,][0-9]+)+");
+    // Matches command input to appropriate loop
+    regex vert_rx("^[V]"); 
+    regex edge_rx("^[E]");
+    regex short_rx("^[S]");
 
-   while (!cin.eof()){ //eof allows program to exit gracefully 
+    // Extract relevant info from input
+    const regex numbers("([0-9]+)+");
+    const regex coordinates("([0-9]+[,][0-9]+)+");
+
+     
+    while (!cin.eof()){ // eof allows program to exit gracefully
         getline(cin, input);
 
+        // Executes this block of code if the number of vertices is specifed through the "V" command
         if (regex_search(input,m,vert_rx)){
             regex_search(input, m, numbers);
 
-            string temp = m[0];
-            a = stoi(temp);
+            string temp = m[0]; // Stores the match object in string "temp"
+            a = stoi(temp); // Converts the string to an integer
 
-            if (a == 0) //Error case for if vertice = 0
+            // Error case --> user specifies a graph with zero vertices
+            if (a == 0) 
                 cout << "Error: Graph cannot have zero vertices!" << endl;
             else
                 V = a;
         }
 
+        // Executes this block of code if the edge list is specifed through the "E" command
         if (regex_search(input,m,edge_rx)){
             adj_list = new vector<int>[V];
+
+            // Creates a match object, "m", with all edges parsed from user input using regex "coordinates"
             while (regex_search(input,m,coordinates)){
-                string s = m.str(0);
+            
+                string s = m.str(0); // Parses one edge in the match object at a time
                 
+                // Extracts vertices from the edge coordinate
                 string delimiter_1 = ",";
                 string delimiter_2 = ">";
                 string token_1 = s.substr(0, s.find(delimiter_1));
                 string token_2 = s.substr(s.find(",")+1, s.find(delimiter_2));
                 b = stoi(token_1);
                 c = stoi(token_2);
-                
-                if (b == c){ //Error case when an edge spec includes the same vertice twice
+
+
+                // Error case --> edge specification includes the same vertice twice
+                if (b == c){ 
                     cout << "Error: Cannot have an edge between a vertice and itself!" << endl;
                     break;
                 }
 
-                if (b >= V || c >= V){ //Error case when an edge spec includes a vertex higher than total number of vertices
+                // Error case --> edge specification includes a vertex higher than the total number of vertices in the graph
+                if (b >= V || c >= V){ 
                     cout << "Error: Cannot have an edge between non-existant vertices." << endl;
                     break;
                 }
 
-                bool flag_1 = false;
-                bool flag_2 = false;
+                bool duplication = false;
+                bool inverse_duplication = false;
 
-
-                for (unsigned int i = 0; i < adj_list[b].size(); i++){ //Error case for duplicate edges
+                // Error case --> duplicate edges
+                for (unsigned int i = 0; i < adj_list[b].size(); i++){ 
                     if (adj_list[b][i] == c){
                         cout << "Error: System does not allow duplicate edges." << endl;
-                        flag_1 = true;
+                        duplication = true;
                         break;
                     }
                 }
 
-                if (flag_1 == true)
+                if (duplication == true)
                     break;
 
-                for (unsigned int i = 0; i < adj_list[c].size(); i++){ //Error case for duplicate edges
+                // Error case --> inverse duplicate edges
+                for (unsigned int i = 0; i < adj_list[c].size(); i++){ 
                     if (adj_list[c][i] == b){
                         cout << "Error: System does not allow duplicate edges." << endl;
-                        flag_2 = true;
+                        inverse_duplication = true;
                         break;
                     }
                 }
 
-                if (flag_2 == true)
+                if (inverse_duplication == true)
                     break;
                 
-                if (flag_1 == false && flag_2 == false) //If the edge spec is valid, add it to the adjacency list
+                // If the edge specification is valid, add it to the adjacency list
+                if (duplication == false && inverse_duplication == false) 
                     add_edge(adj_list, b ,c);
 
-                input = m.suffix(); //Used to iterate through remaining edges
+                // Used to iterate through remaining edges in the match object
+                input = m.suffix(); 
 
             }
 
         }
 
+        // Executes this block of code if the edge list is specifed through the "S" command
         if (regex_search(input,m,short_rx)){
+
             regex_search(input,m,numbers);
             int start = stoi(m[0]);
 
@@ -165,12 +182,14 @@ int main(int argc, char* argv[]){
             regex_search(input,m,numbers);
             int end = stoi(m[0]);
 
-            if (start == end){ //Error case when user tries to specify shortest distance between a vertex and itself
+            // Error case --> user tries to specify shortest distance between a vertex and itself
+            if (start == end){ 
                 cout << "Error: Cannot have self-loop in an undirected graph!" << endl;
                 continue;
             }
 
-            else if (start >= V || end >= V){ //Error case when a user tries to specify shortest distance to a vertex that does not exist
+            // Error case --> user tries to specify shortest distance to a vertex that does not exist
+            else if (start >= V || end >= V){ 
                 cout << "Error: Vertices do not exist - shortest path does therefore, not exist." << endl;
                 continue;
             }
