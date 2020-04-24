@@ -15,8 +15,9 @@ void add_edge(vector<int> adj_list[], int u, int v){
     adj_list[v].push_back(u); // add u into list v
 }
 
-// BFS algorithm to find the shortest path
+// BFS algorithm to find the shortest path between 2 nodes
 void BFS_Shortest(int start, int end, int V, vector<int> adj_list[]){ 
+
     vector<int> line; // Used to simulate a queue data structure 
     bool visited[V]; // Keeps track of all nodes visited
     int prev[V]; // Links path from source node to end node
@@ -34,8 +35,12 @@ void BFS_Shortest(int start, int end, int V, vector<int> adj_list[]){
         line.erase(line.begin()); // Simulates dequeueing
 
         if (adj_list){
-            for(unsigned int i = 0; i < adj_list[node].size(); i++){ // Loops through all connected vertices for node in adjacency list
-                if (visited[adj_list[node][i]] == false){ // If node has been visited, this code will not execute --> saves time
+            
+            // Loops through all connected vertices for node in adjacency list
+            for(unsigned int i = 0; i < adj_list[node].size(); i++){
+
+                // If node has been visited, this code will not execute --> saves time
+                if (visited[adj_list[node][i]] == false){ 
                     
                     visited[adj_list[node][i]] = true;
                     prev[adj_list[node][i]] = node;
@@ -50,7 +55,8 @@ void BFS_Shortest(int start, int end, int V, vector<int> adj_list[]){
                             temp = prev[temp];
                         }
 
-                        while(!shortest_path.empty()){ // Popping off the stack reproduces the shortest path from start node to end node
+                        // Popping off the stack reproduces the shortest path from start node to end node
+                        while(!shortest_path.empty()){ 
                             int i = shortest_path.top();
                             if (i == end)
                                 cout << i << endl;
