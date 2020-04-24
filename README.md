@@ -1,4 +1,4 @@
-# Shortest-Path-Navigator
+# Shortest Path Navigator
 
 ## Purpose
 Derives the shortest path between two nodes in an undirected graph.
@@ -19,11 +19,11 @@ sudo apt install cmake
 ```
 To initiate the build sequence from scratch, use:
 ```
-$ cd Shortest-Path-Navigator && mkdir build && cd build && cmake ../ && make
+$ cd Shortest_Path_Navigator && mkdir build && cd build && cmake ../ && make
 ```
 To run the program:
 ```
-$ cd Shortest-Path-Navigator/build/
+$ cd Shortest_Path_Navigator/build/
 ./shortest
 ```
 
@@ -60,5 +60,5 @@ S 3 0
 ![](Example_Graphed.PNG)
 
 
-**NOTE:** graphed using Graph Online: https://graphonline.ru/en/
+**_Note:_** _graphed using Graph Online:_ https://graphonline.ru/en/
 
